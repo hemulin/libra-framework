@@ -10,8 +10,11 @@ module ol_framework::oracle {
     use aptos_framework::account;
     use aptos_std::ed25519;
     use aptos_std::comparator;
+    use aptos_framework::coin::{Self, Coin};
+    use ol_framework::ol_account;
+    use ol_framework::gas_coin::GasCoin;
 
-    /// A list of all miners' addresses 
+    /// A list of all miners' addresses
     // reset at epoch boundary
     struct ProviderList has key {
       list: vector<address>
@@ -26,7 +29,7 @@ module ol_framework::oracle {
     struct Tower has key {
         last_commit_timestamp: u64,
         previous_proof_hash: vector<u8>,
-        verified_tower_height: u64, 
+        verified_tower_height: u64,
         latest_epoch_mining: u64,
         count_proofs_in_epoch: u64,
         epochs_mining: u64,
@@ -51,7 +54,7 @@ module ol_framework::oracle {
       move_to(provider, Tower {
         last_commit_timestamp: 0,
         previous_proof_hash: vector::empty(),
-        verified_tower_height: 0, 
+        verified_tower_height: 0,
         latest_epoch_mining: 0,
         count_proofs_in_epoch: 0,
         epochs_mining: 0,
@@ -63,21 +66,19 @@ module ol_framework::oracle {
     /// At genesis this can be called once to migrate towers
     public fun migrate_from_vdf_tower(
       root: &signer,
-      provider: &signer, 
+      provider: &signer,
       previous_proof_hash: vector<u8>,
-      verified_tower_height: u64, 
+      verified_tower_height: u64,
       latest_epoch_mining: u64,
       count_proofs_in_epoch: u64,
       epochs_validating_and_mining: u64,
       contiguous_epochs_validating_and_mining: u64,
-
-    
     ) {
       system_addresses::assert_ol(root);
       move_to(provider, Tower {
         last_commit_timestamp: 0,
         previous_proof_hash,
-        verified_tower_height, 
+        verified_tower_height,
         latest_epoch_mining,
         count_proofs_in_epoch,
         epochs_mining: epochs_validating_and_mining,
@@ -174,7 +175,13 @@ module ol_framework::oracle {
       }
     }
 
-    fun has_unrelated_vouches_above_threshold() {
+    fun epoch_reward(vm: &signer, all_coins: &mut Coin<GasCoin>, per_user: u64) acquires ProviderList {
 
+      system_addresses::assert_ol(vm);
+      let provider_list = borrow_global_mut<ProviderList>(@ol_framework);
+      vector::for_each_ref(&provider_list.list, |addr| {
+        let split = coin::extract(all_coins, per_user);
+        ol_account::deposit_coins(*addr, split);
+      });
     }
 }
