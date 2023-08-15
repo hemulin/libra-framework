@@ -13,7 +13,7 @@ runs:
         android: true
         dotnet: true
         haskell: true
-        large-packages: true
+        large-packages: false #issue here https://github.com/jlumbroso/free-disk-space/issues/4
         docker-images: true
         swap-storage: true
 
