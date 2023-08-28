@@ -2,9 +2,9 @@
 
 use crate::{
     supply::SupplySettings,
-    vm::{libra_genesis_default, migration_genesis},
+    vm::{migration_genesis},
 };
-use anyhow::{Chain, Error};
+use anyhow::{Error};
 use libra_types::legacy_types::legacy_recovery::LegacyRecovery;
 use std::fs::File;
 use std::io::Write;
