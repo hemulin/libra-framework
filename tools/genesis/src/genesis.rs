@@ -1,9 +1,6 @@
 //! create a genesis from a LegacyRecovery struct
 
-use crate::{
-    supply::SupplySettings,
-    vm::migration_genesis,
-};
+use crate::{supply::SupplySettings, vm::migration_genesis};
 use anyhow::Error;
 use libra_types::legacy_types::legacy_recovery::LegacyRecovery;
 use std::fs::File;
