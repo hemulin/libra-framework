@@ -64,7 +64,6 @@ module ol_framework::genesis_migration {
 
     assert!(new_balance == expected_initial_balance, error::invalid_state(EBALANCE_MISMATCH));
 
-    // ok now we can withdraw from infra_escrow for validator
   }
 
   fun is_genesis_val(addr: address): bool {
