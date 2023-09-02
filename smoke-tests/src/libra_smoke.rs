@@ -4,10 +4,10 @@ use anyhow::Context;
 use diem_crypto::traits::ValidCryptoMaterialStringExt;
 use diem_forge::{LocalSwarm, Node, Swarm};
 use diem_sdk::types::LocalAccount;
-use diem_smoke_test::smoke_test_environment;
 use libra_framework::release::ReleaseTarget;
 use libra_types::exports::AccountAddress;
 use libra_types::exports::Client;
+use smoke_test::smoke_test_environment;
 use url::Url;
 
 use crate::helpers;
