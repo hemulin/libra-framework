@@ -9,7 +9,7 @@ use libra_types::exports::ChainId;
 use libra_types::legacy_types::legacy_recovery::LegacyRecovery;
 use std::fs;
 use support::{path_utils::json_path, test_vals};
-use zapatos_types::chain_id::NamedChain;
+use diem_types::chain_id::NamedChain;
 // use libra_types::exports::AccountAddress;
 
 #[test]

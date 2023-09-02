@@ -11,10 +11,10 @@ use libra_types::move_resource::ancestry::AncestryResource;
 use libra_types::legacy_types::legacy_recovery::LegacyRecovery;
 use std::fs;
 use support::{path_utils::json_path, test_vals};
-use zapatos_types::chain_id::NamedChain;
-use zapatos_storage_interface::state_view::LatestDbStateCheckpointView;
-use zapatos_state_view::account_with_state_view::AsAccountWithStateView;
-use zapatos_types::account_view::AccountView;
+use diem_types::chain_id::NamedChain;
+use diem_storage_interface::state_view::LatestDbStateCheckpointView;
+use diem_state_view::account_with_state_view::AsAccountWithStateView;
+use diem_types::account_view::AccountView;
 #[test]
 // test that a genesis blob created from struct, will actually contain the data
 fn test_correct_supply_arithmetic_single() {
