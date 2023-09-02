@@ -2,7 +2,7 @@ use crate::helpers::{get_libra_balance, mint_libra};
 use libra_framework::release::ReleaseTarget;
 use diem_forge::Swarm;
 use diem_sdk::types::LocalAccount;
-use diem_smoke_test::smoke_test_environment::new_local_swarm_with_release;
+use smoke_test::smoke_test_environment::new_local_swarm_with_release;
 
 #[tokio::test]
 // let's check that this test environment produces same coins as expected in unit tests, and we have the tools to mint and test balances

@@ -512,14 +512,17 @@ fn parse_optional_option<F: Fn(&str) -> Result<T, E>, T, E: std::fmt::Display>(
 #[test]
 #[ignore] //dev helper
 fn test_github_info() {
+    use crate::vm::libra_genesis_default;
     let gh_token_path = libra_types::global_config_dir().join("github_token.txt");
     let token = std::fs::read_to_string(gh_token_path).unwrap();
-
+    let chain = NamedChain::TESTING;
     let _genesis_info = fetch_genesis_info(
         "0o-de-lally".to_string(),
         "a-genesis".to_string(),
         token,
         true,
+        &libra_genesis_default(chain.clone()),
+        &chain,
     )
     .unwrap();
 }
@@ -538,6 +541,7 @@ fn test_build() {
         true,
         None,
         None,
+        NamedChain::TESTING,
     )
     .unwrap();
 }

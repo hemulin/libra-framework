@@ -2,6 +2,7 @@ use libra_genesis_tools::{
     genesis::{make_recovery_genesis_from_vec_legacy_recovery, save_genesis},
     parse_json,
     supply::SupplySettings,
+    vm::libra_genesis_default,
 };
 use std::path::PathBuf;
 use diem_types::{
@@ -15,7 +16,10 @@ use diem_types::{
 use diem_vm_genesis::{TestValidator, Validator};
 
 use libra_framework::head_release_bundle;
-use libra_types::legacy_types::legacy_address::LegacyAddress;
+use libra_types::{
+  exports::NamedChain,
+  legacy_types::legacy_address::LegacyAddress
+};
 use std::fs;
 
 #[test]
@@ -52,6 +56,7 @@ fn end_to_end_single() {
         &head_release_bundle(),
         ChainId::test(),
         Some(supply_settings),
+        &libra_genesis_default(NamedChain::TESTING),
     )
     .expect("could not write genesis.blob");
 
@@ -117,6 +122,7 @@ fn end_to_end_all() {
         &head_release_bundle(),
         ChainId::test(),
         Some(supply_settings),
+        &libra_genesis_default(NamedChain::TESTING),
     )
     .expect("could not write genesis.blob");
 

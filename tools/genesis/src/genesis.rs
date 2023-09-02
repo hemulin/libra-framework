@@ -12,6 +12,12 @@ use diem_types::{
     transaction::{Transaction, WriteSetPayload},
 };
 use diem_vm_genesis::{GenesisConfiguration, Validator};
+
+#[cfg(test)]
+use crate::vm::libra_genesis_default;
+#[cfg(test)]
+use libra_types::exports::NamedChain;
+
 /// Make a recovery genesis blob
 pub fn make_recovery_genesis_from_vec_legacy_recovery(
     recovery: Option<&[LegacyRecovery]>,
@@ -48,7 +54,6 @@ pub fn save_genesis(gen_tx: &Transaction, output_path: &PathBuf) -> Result<(), E
 }
 
 #[test]
-
 fn test_basic_genesis() {
     use libra_framework::head_release_bundle;
     use diem_vm_genesis::TestValidator;
@@ -60,6 +65,7 @@ fn test_basic_genesis() {
         &head_release_bundle(),
         ChainId::test(),
         None,
+        &libra_genesis_default(NamedChain::TESTING),
     )
     .unwrap();
 }
@@ -87,6 +93,7 @@ fn test_recovery_genesis() {
         &head_release_bundle(),
         ChainId::test(),
         None,
+        &libra_genesis_default(NamedChain::TESTING),
     )
     .unwrap();
 

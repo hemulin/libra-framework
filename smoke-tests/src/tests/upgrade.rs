@@ -6,7 +6,7 @@ use crate::upgrade_fixtures::fixtures_path;
 use libra_framework::release::ReleaseTarget;
 use std::path::PathBuf;
 use diem_forge::Swarm;
-use diem_smoke_test::smoke_test_environment::new_local_swarm_with_release;
+use smoke_test::smoke_test_environment::new_local_swarm_with_release;
 use diem_types::transaction::Script;
 
 use libra_cached_packages::libra_stdlib::{
