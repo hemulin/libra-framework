@@ -9,7 +9,7 @@
 // segregated accounts.
 ///////////////////////////////////////////////////////////////////////////
 
-module ol_framework::infra_escrow{
+module ol_framework::infra_escrow {
     use std::option::{Self, Option};
     use diem_framework::system_addresses;
     use ol_framework::gas_coin::GasCoin;
@@ -19,7 +19,7 @@ module ol_framework::infra_escrow{
     use diem_framework::transaction_fee;
     use std::fixed_point32;
     use std::signer;
-    use diem_std::debug::print;
+    // use diem_std::debug::print;
 
     friend ol_framework::epoch_boundary;
 
@@ -38,7 +38,6 @@ module ol_framework::infra_escrow{
     /// VM can call down pledged funds.
     fun infra_pledge_withdraw(vm: &signer, amount: u64): Option<coin::Coin<GasCoin>> {
         system_addresses::assert_ol(vm);
-        print(&77777777777);
         pledge_accounts::withdraw_from_all_pledge_accounts(vm, amount)
     }
 

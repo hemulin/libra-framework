@@ -50,7 +50,7 @@
         use diem_framework::system_addresses;
         use diem_framework::coin;
 
-        use diem_std::debug::print;
+        // use diem_std::debug::print;
 
         /// no policy at this address
         const ENO_BENEFICIARY_POLICY: u64 = 1;
@@ -231,47 +231,31 @@
 
         // withdraw an amount from all pledge accounts. Check first that there are remaining funds before attempting to withdraw.
         public fun withdraw_from_all_pledge_accounts(sig_beneficiary: &signer, amount: u64): option::Option<coin::Coin<GasCoin>> acquires MyPledges, BeneficiaryPolicy {
-          print(&7001000);
             let pledgers = *&borrow_global<BeneficiaryPolicy>(signer::address_of(sig_beneficiary)).pledgers;
-            print(&pledgers);
 
             let amount_available = *&borrow_global<BeneficiaryPolicy>(signer::address_of(sig_beneficiary)).amount_available;
-
-
-          print(&7001001);
 
             if (amount_available == 0 || amount == 0) {
               return option::none<coin::Coin<GasCoin>>()
             };
 
-          print(&7001002);
-          print(&amount_available);
-          print(&amount);
-
             let pct_withdraw = fixed_point64::create_from_rational((amount as u128), (amount_available as u128));
-          print(&pct_withdraw);
 
             let address_of_beneficiary = signer::address_of(sig_beneficiary);
 
 
             let i = 0;
             let all_coins = option::none<coin::Coin<GasCoin>>();
-          print(&7001003);
 
             while (i < vector::length(&pledgers)) {
                 let pledge_account = *vector::borrow(&pledgers, i);
-          print(&7001003001);
 
                 // DANGER: this is a private function that changes balances.
                 let c = withdraw_pct_from_one_pledge_account(&address_of_beneficiary, &pledge_account, &pct_withdraw);
 
-
-          print(&7001003002);
-
                 // GROSS: dealing with options in Move.
                 // TODO: find a better way.
                 if (option::is_none(&all_coins) && option::is_some(&c)) {
-                                              print(&7001003003);
 
                   let coin =  option::extract(&mut c);
                   option::fill(&mut all_coins, coin);
@@ -279,7 +263,6 @@
                   // option::destroy_none(c);
 
                 } else if (option::is_some(&c)) {
-                                              print(&7001003004);
 
                   let temp = option::extract(&mut all_coins);
                   let coin =  option::extract(&mut c);
@@ -288,8 +271,6 @@
                   all_coins = option::some(temp);
                   option::destroy_none(c);
                 } else {
-                                              print(&7001003005);
-
                   option::destroy_none(c);
                 };
 
@@ -349,9 +330,6 @@
         // but also for revoking a pledge
         // WARN: we must know there is a coin at this account before calling it.
         fun withdraw_pct_from_one_pledge_account(address_of_beneficiary: &address, payer: &address, pct: &fixed_point64::FixedPoint64):Option<coin::Coin<GasCoin>> acquires MyPledges, BeneficiaryPolicy {
-            print(&66666666);
-            print(&6001000);
-
             let (found, idx) = pledge_at_idx(payer, address_of_beneficiary);
             if (!found) return option::none<coin::Coin<GasCoin>>(); // don't error on functions called by VM.
 
@@ -364,12 +342,11 @@
             if (user_pledged_balance == 0) {
               return option::none<coin::Coin<GasCoin>>()
             };
-            print(&6001001);
-            print(&user_pledged_balance);
-            print(pct);
+
 
             let amount_withdraw = fixed_point64::multiply_u128(user_pledged_balance, *pct);
-            print(&6001002);
+
+
             if (
               user_pledged_balance >= amount_withdraw
               ) {
@@ -380,20 +357,17 @@
                 pledge_account.lifetime_withdrawn = pledge_account.lifetime_withdrawn + downcast_withdraw;
 
                 // update the beneficiaries state too
-            print(&6001003);
 
                 let bp = borrow_global_mut<BeneficiaryPolicy>(*address_of_beneficiary);
 
                 bp.amount_available = bp.amount_available - downcast_withdraw;
 
                 bp.lifetime_withdrawn = bp.lifetime_withdrawn + downcast_withdraw;
-            print(&6001004);
 
 
                 let coin = coin::extract(&mut pledge_account.pledge, downcast_withdraw);
                 return option::some(coin)
               };
-            print(&6001005);
 
             option::none()
         }
