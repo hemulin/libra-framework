@@ -34,7 +34,7 @@ pub fn initialize_host(
         // TODO: nice to have
     // also for convenience create a local user libra.yaml file so the
     // validator can make transactions against the localhost
-    let cfg = AppCfg::init_app_configs(keys.child_0_owner.auth_key, keys.child_0_owner.account, home_path.clone(), None, Some(NetworkPlaylist::localhost(None)))?;
+    let cfg = AppCfg::init_app_configs(keys.child_0_owner.auth_key, keys.child_0_owner.account, home_path, None, Some(NetworkPlaylist::localhost(None)))?;
 
     cfg.save_file().context(format!(
         "could not initialize configs at {}",
