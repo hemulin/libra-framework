@@ -2,13 +2,13 @@
 //! autopay view for web monitor
 
 use anyhow::Result;
+use diem_types::account_address::AccountAddress;
 use move_core_types::{
     ident_str,
     identifier::IdentStr,
     move_resource::{MoveResource, MoveStructType},
 };
 use serde::{Deserialize, Serialize};
-use diem_types::account_address::AccountAddress;
 // use diem_types::access_path::AccessPath;
 // use move_core_types::language_storage::StructTag;
 // use move_core_types::account_address::AccountAddress;

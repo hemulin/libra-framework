@@ -28,7 +28,6 @@ enum WalletSub {
     /// Use the legacy key derivation scheme
     // TODO: call this 'WalletArgs'
     Legacy(LegArgs),
-
     // TODO: add WhoAmI to display the wallet info.
 }
 

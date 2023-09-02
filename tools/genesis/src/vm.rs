@@ -1,6 +1,5 @@
 #![allow(clippy::too_many_arguments)]
 
-use libra_types::{legacy_types::legacy_recovery::LegacyRecovery, ol_progress::OLProgress};
 use diem_crypto::{ed25519::Ed25519PublicKey, HashValue};
 use diem_framework::{self, ReleaseBundle};
 use diem_gas::{
@@ -24,8 +23,12 @@ use diem_vm_genesis::{
     initialize_on_chain_governance, publish_framework, set_genesis_end, validate_genesis_config,
     verify_genesis_write_set, GenesisConfiguration, Validator, GENESIS_KEYPAIR,
 };
+use libra_types::{legacy_types::legacy_recovery::LegacyRecovery, ol_progress::OLProgress};
 
-use crate::{genesis_functions::{mint_genesis_bootstrap_coin, rounding_mint}, supply::SupplySettings};
+use crate::{
+    genesis_functions::{mint_genesis_bootstrap_coin, rounding_mint},
+    supply::SupplySettings,
+};
 
 /// set the genesis parameters
 /// NOTE: many of the parameters are ignored in libra_framework
@@ -148,9 +151,8 @@ pub fn encode_genesis_change_set(
 
     // add some coins in each validator account.
     if chain_id != ChainId::new(1) || option_env!("LIBRA_CI").is_some() {
-      mint_genesis_bootstrap_coin(&mut session, validators);
+        mint_genesis_bootstrap_coin(&mut session, validators);
     }
-
 
     OLProgress::complete("initialized genesis validators");
 
