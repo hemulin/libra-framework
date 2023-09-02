@@ -11,16 +11,16 @@ You should have two repos that you are working with. This one `libra-v7`, as wel
 #### check env
 This assumes that you have a `~/.cargo/bin` which is added to your environment's $PATH.
 
-Export the path to your `zapatos` source, to make this easier. 
+Export the path to your `zapatos` source, to make this easier.
 
-`export ZAPATOS="~/path/to/source"`
+`export DIEM="~/path/to/source"`
 #### build executables
 You want to create a `zapatos` executable so you can run the `move` cli with the framework changes.
 
 You'll want `aptos` (cli for move tests), `aptos-framework` (framework compiler), `aptos-node` (for smoke tests only).
 
 ```
-cd $ZAPATOS
+cd $DIEM
 cargo build --release -p aptos-framework -p aptos -p aptos-node --target-dir ~/.cargo/bin
 cd ~/.cargo/bin
 mv aptos-framework zapatos-framework

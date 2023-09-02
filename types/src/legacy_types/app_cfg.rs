@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 use url::Url;
 
-use zapatos_crypto::ed25519::Ed25519PrivateKey;
+use diem_crypto::ed25519::Ed25519PrivateKey;
 
 use std::{fs, io::Write, path::PathBuf, str::FromStr};
 
@@ -235,7 +235,7 @@ impl AppCfg {
 
     pub fn init_for_tests(path: PathBuf) -> anyhow::Result<AppCfg> {
 
-        use zapatos_crypto::ValidCryptoMaterialStringExt;
+        use diem_crypto::ValidCryptoMaterialStringExt;
         let mut cfg = Self::init_app_configs(
             "87515d94a244235a1433d7117bc0cb154c613c2f4b1e67ca8d98a542ee3f59f5".parse()?,
             "0x87515d94a244235a1433d7117bc0cb154c613c2f4b1e67ca8d98a542ee3f59f5".parse()?,

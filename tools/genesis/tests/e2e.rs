@@ -5,7 +5,7 @@ use libra_genesis_tools::{
     vm::libra_genesis_default,
 };
 use std::path::PathBuf;
-use zapatos_types::{
+use diem_types::{
     chain_id::{ChainId, NamedChain},
     on_chain_config::OnChainConfig,
     on_chain_config::ValidatorSet,
@@ -13,7 +13,7 @@ use zapatos_types::{
     transaction::{Transaction, WriteSetPayload},
     write_set::TransactionWrite,
 };
-use zapatos_vm_genesis::{TestValidator, Validator};
+use diem_vm_genesis::{TestValidator, Validator};
 
 use libra_framework::head_release_bundle;
 use libra_types::legacy_types::legacy_address::LegacyAddress;

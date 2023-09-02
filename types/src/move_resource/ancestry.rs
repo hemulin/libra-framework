@@ -8,8 +8,8 @@ use move_core_types::{
     move_resource::{MoveResource, MoveStructType},
 };
 use serde::{Deserialize, Serialize};
-use zapatos_types::account_address::AccountAddress;
-// use zapatos_types::access_path::AccessPath;
+use diem_types::account_address::AccountAddress;
+// use diem_types::access_path::AccessPath;
 // use move_core_types::language_storage::StructTag;
 // use move_core_types::account_address::AccountAddress;
 // use move_core_types::language_storage::CORE_CODE_ADDRESS;
