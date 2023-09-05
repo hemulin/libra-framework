@@ -60,7 +60,7 @@ async fn can_upgrade() {
     // mint_libra(&mut public_info, dave_account.address(), 10_000_000_000).await.unwrap();
 
     let proposal_path = get_package_path().join("script.mv");
-    // dbg!(&proposal_path);
+
     assert!(&proposal_path.exists());
 
     let proposal_hash_path = get_package_path().join("script_sha3");
@@ -82,7 +82,6 @@ async fn can_upgrade() {
 
     let txn = alice_account
         .sign_with_transaction_builder(public_info.transaction_factory().payload(payload));
-    dbg!("proposal txn");
 
     public_info.client().submit_and_wait(&txn).await.unwrap();
     let proposal_id = 0;

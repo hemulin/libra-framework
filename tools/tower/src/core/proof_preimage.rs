@@ -108,10 +108,3 @@ fn padding(mut statement_bytes: Vec<u8>, limit: usize) -> Vec<u8> {
     }
 }
 
-// #[test]
-
-// fn test() {
-//     let word = padding("hello".as_bytes().to_vec(), 100);
-//     asset!(word.len(), )
-//     dbg!(&word);
-// }

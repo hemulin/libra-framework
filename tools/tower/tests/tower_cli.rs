@@ -16,6 +16,7 @@ use libra_types::exports::ValidCryptoMaterialStringExt;
 
 /// Testing that we can get a swarm up with the current head.mrb
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+// #[ignore]
 async fn tower_cli_e2e() {
     let d = diem_temppath::TempPath::new();
 
@@ -30,7 +31,6 @@ async fn tower_cli_e2e() {
 
     // check the tower state is blank
     assert!(backlog::get_remote_tower_height(&app_cfg).await.is_err());
-
     // 1. have the validator reate a zeroth proof locally
     let profile = app_cfg.get_profile(None).unwrap();
     let pri_key_string = profile
@@ -80,6 +80,8 @@ async fn tower_cli_e2e() {
     cli.run().await.expect("could not run cli");
     cli.command = TowerSub::Backlog { show: false };
     cli.run().await.expect("could not run cli");
+
+
     let (_total_height, submitted_in_epoch) = backlog::get_remote_tower_height(&app_cfg)
         .await
         .expect("could not get remote height");
