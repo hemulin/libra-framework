@@ -107,4 +107,3 @@ fn padding(mut statement_bytes: Vec<u8>, limit: usize) -> Vec<u8> {
         _ => unreachable!(),
     }
 }
-

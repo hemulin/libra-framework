@@ -81,7 +81,6 @@ async fn tower_cli_e2e() {
     cli.command = TowerSub::Backlog { show: false };
     cli.run().await.expect("could not run cli");
 
-
     let (_total_height, submitted_in_epoch) = backlog::get_remote_tower_height(&app_cfg)
         .await
         .expect("could not get remote height");

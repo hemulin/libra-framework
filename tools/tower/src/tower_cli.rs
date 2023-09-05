@@ -61,14 +61,14 @@ impl TowerCli {
                 } else {
                     if profile.borrow_private_key().is_err() {
                         prompt_private_key(profile)?;
-                      }
+                    }
 
                     backlog::process_backlog(&app_cfg).await?;
                 }
             }
             TowerSub::Start => {
                 if profile.borrow_private_key().is_err() {
-                  prompt_private_key(profile)?;
+                    prompt_private_key(profile)?;
                 }
                 proof::mine_and_submit(&mut app_cfg, self.local_mode).await?;
             }
@@ -87,7 +87,7 @@ impl TowerCli {
 
 // for any long running operations requiring the private key in memory.
 fn prompt_private_key(cfg: &mut Profile) -> anyhow::Result<()> {
-      let leg_keys = libra_wallet::account_keys::get_keys_from_prompt()?;
-      cfg.set_private_key(&leg_keys.child_0_owner.pri_key);
+    let leg_keys = libra_wallet::account_keys::get_keys_from_prompt()?;
+    cfg.set_private_key(&leg_keys.child_0_owner.pri_key);
     Ok(())
 }

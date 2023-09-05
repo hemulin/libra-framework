@@ -47,7 +47,6 @@ pub fn generate_fixtures(output_path: PathBuf, modules: Vec<String>) -> anyhow::
 
     let libra_framework_sources = this_crate.parent().unwrap().join("framework");
 
-
     make_framework_upgrade_artifacts(&output_path, &libra_framework_sources, &Some(modules))?;
 
     // ok, cleanup
