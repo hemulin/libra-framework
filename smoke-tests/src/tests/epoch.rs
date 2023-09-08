@@ -16,6 +16,7 @@ async fn meta_create_libra_smoke() -> anyhow::Result<()> {
     };
 
     let state = p.reconfig().await;
+    // epoch_boundary::epoch_boundary vm, epoch
 
     assert!(prev_epoch < state.epoch, "epoch did not advance on reconfig()");
 

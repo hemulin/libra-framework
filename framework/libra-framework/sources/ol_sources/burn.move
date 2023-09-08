@@ -61,6 +61,7 @@ module ol_framework::burn {
       // get the total fees made. This will likely be different than
       // the value of Coins, since some have already been spent on validator rewards.
       let total_fees_made = fee_maker::get_all_fees_made();
+      if  (total_fees_made == 0) return;
 
       // extract fees
       // let coins = transaction_fee::root_withdraw_all(vm);

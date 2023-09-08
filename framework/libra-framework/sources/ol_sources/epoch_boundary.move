@@ -17,6 +17,7 @@ module diem_framework::epoch_boundary {
     use ol_framework::tower_state;
     use ol_framework::infra_escrow;
     use ol_framework::oracle;
+    use diem_framework::reconfiguration;
     use diem_framework::transaction_fee;
     use diem_framework::system_addresses;
     use diem_framework::coin::{Self, Coin};
@@ -33,12 +34,13 @@ module diem_framework::epoch_boundary {
     // Contains all of 0L's business logic for end of epoch.
     // This removed business logic from reconfiguration.move
     // and prevents dependency cycling.
-    public(friend) fun epoch_boundary(root: &signer, closing_epoch: u64) {
+    public(friend) fun epoch_boundary(root: &signer) {
         if (signer::address_of(root) != @ol_framework) { // should never abort
             return
         };
         // bill root service fees;
         root_service_billing(root);
+        let closing_epoch = reconfiguration::get_current_epoch();
         // run the transactions of donor directed accounts
         donor_directed::process_donor_directed_accounts(root, closing_epoch);
         // reset fee makers tracking
@@ -72,6 +74,8 @@ module diem_framework::epoch_boundary {
         coin::user_burn(all_fees);
 
         subsidize_from_infra_escrow(root);
+
+        reconfiguration::reconfigure();
 
     }
 
@@ -142,11 +146,11 @@ module diem_framework::epoch_boundary {
 
 
   #[test_only]
-  public fun ol_reconfigure_for_test(vm: &signer, closing_epoch: u64) {
+  public fun ol_reconfigure_for_test(vm: &signer) {
       use diem_framework::system_addresses;
 
       system_addresses::assert_ol(vm);
-      epoch_boundary(vm, closing_epoch);
+      epoch_boundary(vm);
   }
 
 }

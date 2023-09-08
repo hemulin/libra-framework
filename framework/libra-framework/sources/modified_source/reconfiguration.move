@@ -17,12 +17,14 @@ module diem_framework::reconfiguration {
     // use diem_std::debug::print;
 
     friend diem_framework::diem_governance;
-    friend diem_framework::block;
+    // friend diem_framework::block;
     friend diem_framework::consensus_config;
     friend diem_framework::execution_config;
     friend diem_framework::gas_schedule;
     friend diem_framework::genesis;
     friend diem_framework::version;
+
+    friend ol_framework::epoch_boundary;
 
     /// Event that signals consensus to start a new epoch,
     /// with new configuration information. This is also called a

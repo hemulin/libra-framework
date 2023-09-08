@@ -259,9 +259,10 @@ module ol_framework::mock {
     // transactions or operations can happen after the reconfig.
     public fun trigger_epoch(root: &signer) {
         let old_epoch = epoch_helper::get_current_epoch();
-        epoch_boundary::ol_reconfigure_for_test(root, reconfiguration::get_current_epoch());
         timestamp::fast_forward_seconds(EPOCH_DURATION);
-        reconfiguration::reconfigure_for_test();
+
+        epoch_boundary::ol_reconfigure_for_test(root);
+        // reconfiguration::reconfigure_for_test();
         assert!(epoch_helper::get_current_epoch() > old_epoch, EDID_NOT_ADVANCE_EPOCH);
     }
 
