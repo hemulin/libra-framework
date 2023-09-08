@@ -81,6 +81,11 @@ module diem_framework::system_addresses {
     }
 
 
+    /// Assert that the signer has the VM reserved address.
+    public fun assert_reserved(account: &signer) {
+        assert!(is_reserved_address(signer::address_of(account)), error::permission_denied(ENOT_FRAMEWORK_RESERVED_ADDRESS))
+    }
+
     //////// 0L ////////
 
     const ENOT_OL_ROOT_ADDRESS: u64 = 0;

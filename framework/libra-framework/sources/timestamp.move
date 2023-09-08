@@ -89,7 +89,7 @@ module diem_framework::timestamp {
 
     /// for testing
     public(friend) fun root_test_fast_forward_seconds(root: &signer, timestamp_seconds: u64) acquires CurrentTimeMicroseconds {
-        system_addresses::assert_ol(root);
+        system_addresses::assert_reserved(root);
         let global_timer = borrow_global_mut<CurrentTimeMicroseconds>(@diem_framework);
         let now = global_timer.microseconds;
         let timestamp_microsecs = timestamp_seconds * MICRO_CONVERSION_FACTOR;

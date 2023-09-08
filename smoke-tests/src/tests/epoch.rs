@@ -4,7 +4,7 @@ use crate::{libra_smoke::LibraSmoke, helpers};
 
 /// testing epoch changes after 2 mins
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-async fn meta_create_libra_smoke() -> anyhow::Result<()> {
+async fn meta_epoch_change() -> anyhow::Result<()> {
     let mut s = LibraSmoke::new(None)
         .await
         .expect("cannot start libra swarm");
@@ -14,6 +14,8 @@ async fn meta_create_libra_smoke() -> anyhow::Result<()> {
         let li = client.get_ledger_information().await?;
         li.inner().epoch
     };
+
+    // dbg!(&p.root_account());
 
     // let state = p.reconfig().await;
     let fast_forward_seconds = 3 * 60;

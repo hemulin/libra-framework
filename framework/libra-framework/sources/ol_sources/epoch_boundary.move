@@ -25,7 +25,7 @@ module diem_framework::epoch_boundary {
     use diem_framework::coin::{Self, Coin};
     use std::vector;
 
-    // use diem_std::debug::print;
+    use diem_std::debug::print;
 
     /// how many PoF baseline rewards to we set aside for the miners.
     /// equivalent reward of one seats of the validator set
@@ -43,9 +43,11 @@ module diem_framework::epoch_boundary {
     // This removed business logic from reconfiguration.move
     // and prevents dependency cycling.
     public(friend) fun epoch_boundary(root: &signer) {
-        if (signer::address_of(root) != @ol_framework) { // should never abort
-            return
-        };
+        print(&signer::address_of(root));
+       system_addresses::assert_reserved(root);
+        // if (signer::address_of(root) != @ol_framework) { // should never abort
+            // return
+        // };
         // bill root service fees;
         root_service_billing(root);
         let closing_epoch = reconfiguration::get_current_epoch();
