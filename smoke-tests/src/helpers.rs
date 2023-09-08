@@ -55,3 +55,19 @@ pub async fn mint_libra(
     public_info.client().submit_and_wait(&mint_txn).await?;
     Ok(())
 }
+
+pub async fn trigger_epoch_boundary(
+    public_info: &mut DiemPublicInfo<'_>,
+    seconds: u64,
+) -> anyhow::Result<()> {
+    let payload = public_info
+        .transaction_factory()
+        .payload(libra_stdlib::epoch_boundary_test_epoch_boundary(seconds));
+
+    let txn = public_info
+        .root_account()
+        .sign_with_transaction_builder(payload);
+
+    public_info.client().submit_and_wait(&txn).await?;
+    Ok(())
+}

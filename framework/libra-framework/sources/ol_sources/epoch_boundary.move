@@ -14,6 +14,8 @@ module diem_framework::epoch_boundary {
     use ol_framework::burn;
     use ol_framework::donor_directed;
     use ol_framework::fee_maker;
+    use ol_framework::testnet;
+    use ol_framework::timestamp;
     use ol_framework::tower_state;
     use ol_framework::infra_escrow;
     use ol_framework::oracle;
@@ -30,6 +32,12 @@ module diem_framework::epoch_boundary {
     const ORACLE_PROVIDERS_SEATS: u64 = 1;
 
     friend diem_framework::block;
+
+    public entry fun test_epoch_boundary(root: &signer, seconds: u64) {
+      testnet::is_not_mainnet();
+      timestamp::root_test_fast_forward_seconds(root, seconds);
+      epoch_boundary(root);
+    }
 
     // Contains all of 0L's business logic for end of epoch.
     // This removed business logic from reconfiguration.move

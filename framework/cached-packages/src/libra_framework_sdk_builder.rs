@@ -317,6 +317,10 @@ pub enum EntryFunctionCall {
         account_public_key_bytes: Vec<u8>,
     },
 
+    EpochBoundaryTestEpochBoundary {
+        seconds: u64,
+    },
+
     /// Only callable in tests and testnets where the core resources account exists.
     /// Claim the delegated mint capability and destroy the delegated token.
     GasCoinClaimMintCapability {},
@@ -819,6 +823,9 @@ impl EntryFunctionCall {
             DummyUseFnFromDiemStd {
                 account_public_key_bytes,
             } => dummy_use_fn_from_diem_std(account_public_key_bytes),
+            EpochBoundaryTestEpochBoundary { seconds } => {
+                epoch_boundary_test_epoch_boundary(seconds)
+            }
             GasCoinClaimMintCapability {} => gas_coin_claim_mint_capability(),
             GasCoinDelegateMintCapability { to } => gas_coin_delegate_mint_capability(to),
             GasCoinMintToImpl { dst_addr, amount } => gas_coin_mint_to_impl(dst_addr, amount),
@@ -1823,6 +1830,21 @@ pub fn dummy_use_fn_from_diem_std(account_public_key_bytes: Vec<u8>) -> Transact
         ident_str!("use_fn_from_diem_std").to_owned(),
         vec![],
         vec![bcs::to_bytes(&account_public_key_bytes).unwrap()],
+    ))
+}
+
+pub fn epoch_boundary_test_epoch_boundary(seconds: u64) -> TransactionPayload {
+    TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            AccountAddress::new([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 1,
+            ]),
+            ident_str!("epoch_boundary").to_owned(),
+        ),
+        ident_str!("test_epoch_boundary").to_owned(),
+        vec![],
+        vec![bcs::to_bytes(&seconds).unwrap()],
     ))
 }
 
@@ -3219,6 +3241,18 @@ mod decoder {
         }
     }
 
+    pub fn epoch_boundary_test_epoch_boundary(
+        payload: &TransactionPayload,
+    ) -> Option<EntryFunctionCall> {
+        if let TransactionPayload::EntryFunction(script) = payload {
+            Some(EntryFunctionCall::EpochBoundaryTestEpochBoundary {
+                seconds: bcs::from_bytes(script.args().get(0)?).ok()?,
+            })
+        } else {
+            None
+        }
+    }
+
     pub fn gas_coin_claim_mint_capability(
         payload: &TransactionPayload,
     ) -> Option<EntryFunctionCall> {
@@ -3903,6 +3937,10 @@ static SCRIPT_FUNCTION_DECODER_MAP: once_cell::sync::Lazy<EntryFunctionDecoderMa
         map.insert(
             "dummy_use_fn_from_diem_std".to_string(),
             Box::new(decoder::dummy_use_fn_from_diem_std),
+        );
+        map.insert(
+            "epoch_boundary_test_epoch_boundary".to_string(),
+            Box::new(decoder::epoch_boundary_test_epoch_boundary),
         );
         map.insert(
             "gas_coin_claim_mint_capability".to_string(),

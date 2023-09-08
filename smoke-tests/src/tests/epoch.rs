@@ -1,6 +1,6 @@
 use diem_forge::Swarm;
 
-use crate::libra_smoke::LibraSmoke;
+use crate::{libra_smoke::LibraSmoke, helpers};
 
 /// testing epoch changes after 2 mins
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
@@ -15,10 +15,17 @@ async fn meta_create_libra_smoke() -> anyhow::Result<()> {
         li.inner().epoch
     };
 
-    let state = p.reconfig().await;
+    // let state = p.reconfig().await;
+    let fast_forward_seconds = 3 * 60;
+    helpers::trigger_epoch_boundary(&mut p, fast_forward_seconds).await?;
     // epoch_boundary::epoch_boundary vm, epoch
 
-    assert!(prev_epoch < state.epoch, "epoch did not advance on reconfig()");
+    let epoch = {
+        let client = p.client();
+        let li = client.get_ledger_information().await?;
+        li.inner().epoch
+    };
+    assert!(prev_epoch < epoch, "epoch did not advance on reconfig()");
 
     Ok(())
 }

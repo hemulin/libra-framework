@@ -7,6 +7,7 @@ module diem_framework::timestamp {
     use std::error;
 
     friend diem_framework::genesis;
+    friend ol_framework::epoch_boundary;
 
     /// A singleton resource holding the current Unix time in microseconds
     struct CurrentTimeMicroseconds has key {
@@ -85,4 +86,15 @@ module diem_framework::timestamp {
     public fun fast_forward_seconds(timestamp_seconds: u64) acquires CurrentTimeMicroseconds {
         update_global_time_for_test_secs(now_seconds() + timestamp_seconds);
     }
+
+    /// for testing
+    public(friend) fun root_test_fast_forward_seconds(root: &signer, timestamp_seconds: u64) acquires CurrentTimeMicroseconds {
+        system_addresses::assert_ol(root);
+        let global_timer = borrow_global_mut<CurrentTimeMicroseconds>(@diem_framework);
+        let now = global_timer.microseconds;
+        let timestamp_microsecs = timestamp_seconds * MICRO_CONVERSION_FACTOR;
+        assert!(now < timestamp_microsecs, error::invalid_argument(EINVALID_TIMESTAMP));
+        global_timer.microseconds = timestamp_microsecs;
+    }
+
 }
