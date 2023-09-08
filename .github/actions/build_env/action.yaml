@@ -44,11 +44,12 @@ runs:
         # creates a shallow checkout.
         fetch-depth: 0
 
+    - name: cargo mtime reset
+      uses: chetan/git-restore-mtime-action@v2
+
     - name: cache rust
       uses: Swatinem/rust-cache@v2
       with:
         shared-key: "libra" # to share across CI builds, so it is not job-id specific
         cache-on-failure: true
 
-    - name: cargo mtime reset
-      uses: chetan/git-restore-mtime-action@v2
