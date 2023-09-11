@@ -7,8 +7,7 @@ jobs:
   delete_all_runs:
     name: delete all workflow runs
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
+    permissions: write-all
     steps:
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
@@ -24,6 +23,7 @@ jobs:
   wipe_caches:
     name: delete all caches
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: clear caches
         uses: easimon/wipe-cache@main
