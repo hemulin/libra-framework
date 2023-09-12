@@ -1,5 +1,6 @@
 name: sccache
 description: setup sccache with local caching
+
 runs:
   using: composite
   steps:
@@ -11,19 +12,20 @@ runs:
         cp sccache-v0.5.4-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache &&
         chmod 744 /usr/local/bin/sccache
 
-    - name: Initialize sccache environnement
+    - name: discover path of sccache storage
       shell: bash
       run: |
         echo SCCACHE_CACHE=$(sccache --show-stats | grep Local | cut -d '"' -f2) >> $GITHUB_ENV
         sccache --stop-server
-        echo $SCCACHE_CACHE
 
-    - name: set-up sccache cache
+    - name: Recover sccache cache
       uses: actions/cache@v3
       with:
         path: ${{env.SCCACHE_CACHE}}
-        key: sccache-cache-${{runner.os}}
-        # restore-keys: sccache-cache-${{runner.os}}-0
+        # let github's cache expiry rules work to clear caches. Don't do anything proactively.
+        key: sccache-cache-${{runner.os}}-0-${{ github.run_id }}
+        restore-keys: sccache-cache-${{runner.os}}-0
+
     - name: set sccache env
       # don't do this before test because rust tools may not build inluding sccache itself.
       # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable

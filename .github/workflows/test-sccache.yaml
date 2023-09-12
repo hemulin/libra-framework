@@ -3,37 +3,34 @@ name: test sccache
 on:
   push:
     branches:
-      - 'ci'
+      - 'debug-ci'
 env:
-  DIEM_FORGE_NODE_BIN_PATH: ${{github.workspace}}/diem-node
   LIBRA_CI: 1
   MODE_0L: "TESTNET"
 
 jobs:
   rust-tests:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    # permissions: write-all
     steps:
-    # NOTE: for debugging CI this allow shell access to github runner. Will print out tmate.io terminal url
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      with:
-        detached: true
-      timeout-minutes: 15
+    # # NOTE: for debugging CI this allow shell access to github runner. Will print out tmate.io terminal url
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   with:
+    #     detached: true
+    #   timeout-minutes: 15
 
     - uses: actions/checkout@v3
-    # - name: setup env
-    #   uses: ./.github/actions/build_env
+    - name: setup env
+      uses: ./.github/actions/build_env
 
     - name: enable sccache
-      uses: ./.github/actions/sccache
+      uses: 0o-de-lally/sccache-action@main
 
-    # - name: set sccache
-    #   # don't do this before test because rust tools may not build inluding sccache itself.
-    #   # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-    #   shell: bash
-    #   run: echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
+    - name: cargo registry
+      run: cargo update -p diem
 
-    # fail fast if types doesnt compile, everything else will fail.
-    - name: types
-      working-directory: ./types
-      run: cargo test --no-fail-fast --target x86_64-unknown-linux-gnu
+    - name: quick test serde
+      run: cargo c -p serde_json
+
+
