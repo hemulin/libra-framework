@@ -4,21 +4,21 @@ runs:
   using: composite
   steps:
 
-    # - name: free disk space
-    #   uses: jlumbroso/free-disk-space@main
-    #   with:
-    #     # this might remove tools that are actually needed,
-    #     # if set to "true" but frees about 6 GB
-    #     tool-cache: false
+    - name: free disk space
+      uses: jlumbroso/free-disk-space@main
+      with:
+        # this might remove tools that are actually needed,
+        # if set to "true" but frees about 6 GB
+        tool-cache: false
 
-    #     # all of these default to true, but feel free to set to
-    #     # "false" if necessary for your workflow
-    #     android: true
-    #     dotnet: true
-    #     haskell: true
-    #     large-packages: false
-    #     docker-images: true
-    #     swap-storage: true
+        # all of these default to true, but feel free to set to
+        # "false" if necessary for your workflow
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: true
 
     - uses: awalsh128/cache-apt-pkgs-action@latest
       with:
@@ -31,6 +31,6 @@ runs:
         toolchain: 1.70.0
         override: true
 
-    # - name: install rustfmt clippy
-    #   shell: bash
-    #   run: rustup component add rustfmt clippy
+    - name: install rustfmt clippy
+      shell: bash
+      run: rustup component add rustfmt clippy
