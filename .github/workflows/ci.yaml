@@ -37,7 +37,7 @@ jobs:
       uses: ./.github/actions/build_env
 
     - name: enable sccache
-      uses: ./.github/actions/sccache
+      uses: 0o-de-lally/sccache-action@local
 
     - name: build framework
       working-directory: ./framework
@@ -66,7 +66,7 @@ jobs:
         ls -l $DIEM_FORGE_NODE_BIN_PATH
 
     - name: enable sccache
-      uses: ./.github/actions/sccache
+      uses: 0o-de-lally/sccache-action@local
 
     # fail fast if types doesnt compile, everything else will fail.
     - name: types
@@ -107,7 +107,7 @@ jobs:
         ls -l $DIEM_FORGE_NODE_BIN_PATH
 
     - name: enable sccache
-      uses: ./.github/actions/sccache
+      uses: 0o-de-lally/sccache-action@local
 
     # Tools tests (some use smoke-tests)
     - name: query
