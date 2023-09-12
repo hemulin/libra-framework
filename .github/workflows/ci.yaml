@@ -21,7 +21,30 @@ env:
   MODE_0L: "TESTNET"
 
 jobs:
-  rust-tests:
+  build-framework:
+    runs-on: ubuntu-latest
+    steps:
+    # # NOTE: for debugging CI this allow shell access to github runner. Will print out tmate.io terminal url
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   with:
+    #     detached: true
+    #   # timeout-minutes: 15
+
+    - uses: actions/checkout@v3
+
+    - name: setup env
+      uses: ./.github/actions/build_env
+
+    - name: enable sccache
+      uses: ./.github/actions/sccache
+
+    - name: build framework
+      working-directory: ./framework
+      run: cargo r release
+
+  basic-tests:
+    needs: [build-framework]
     runs-on: ubuntu-latest
     steps:
     # # NOTE: for debugging CI this allow shell access to github runner. Will print out tmate.io terminal url
@@ -60,6 +83,31 @@ jobs:
       if: always()
       working-directory: ./smoke-tests
       run: cargo test --no-fail-fast
+
+  tools-tests:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+    # # NOTE: for debugging CI this allow shell access to github runner. Will print out tmate.io terminal url
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   with:
+    #     detached: true
+    #   # timeout-minutes: 15
+
+    - uses: actions/checkout@v3
+    - name: setup env
+      uses: ./.github/actions/build_env
+
+    - name: install diem-node (for smoke tests)
+      run: >
+        wget -O $DIEM_FORGE_NODE_BIN_PATH https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem-node &&
+        sudo chmod 755 $DIEM_FORGE_NODE_BIN_PATH &&
+        echo $DIEM_FORGE_NODE_BIN_PATH &&
+        ls -l $DIEM_FORGE_NODE_BIN_PATH
+
+    - name: enable sccache
+      uses: ./.github/actions/sccache
 
     # Tools tests (some use smoke-tests)
     - name: query
