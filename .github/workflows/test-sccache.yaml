@@ -5,6 +5,7 @@ on:
     branches:
       - 'debug-ci'
 env:
+  DIEM_FORGE_NODE_BIN_PATH: ${{github.workspace}}/diem-node
   LIBRA_CI: 1
   MODE_0L: "TESTNET"
 
@@ -24,13 +25,23 @@ jobs:
     - name: setup env
       uses: ./.github/actions/build_env
 
+    - name: install diem-node (for smoke tests)
+      run: >
+        wget -O $DIEM_FORGE_NODE_BIN_PATH https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem-node &&
+        sudo chmod 755 $DIEM_FORGE_NODE_BIN_PATH &&
+        echo $DIEM_FORGE_NODE_BIN_PATH &&
+        ls -l $DIEM_FORGE_NODE_BIN_PATH
+
+
     - name: enable sccache
-      uses: 0o-de-lally/sccache-action@main
+      uses: 0o-de-lally/sccache-action@local
 
-    - name: cargo registry
-      run: cargo update -p diem
+    - name: build framework
+      run: cargo run -p libra-framework -- release
 
-    - name: quick test serde
-      run: cargo c -p serde_json
+    - name: all tests
+      run: cargo test
+
+
 
 
