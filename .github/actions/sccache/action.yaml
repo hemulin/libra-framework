@@ -1,0 +1,33 @@
+name: sccache
+description: setup sccache with local caching
+
+runs:
+  using: composite
+  steps:
+    - name: Download sccache bin
+      shell: bash
+      run: >
+        wget https://github.com/mozilla/sccache/releases/download/v0.5.4/sccache-v0.5.4-x86_64-unknown-linux-musl.tar.gz &&
+        tar -xvf sccache-v0.5.4-x86_64-unknown-linux-musl.tar.gz &&
+        cp sccache-v0.5.4-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache &&
+        chmod 744 /usr/local/bin/sccache
+
+    - name: discover path of sccache storage
+      shell: bash
+      run: |
+        echo SCCACHE_CACHE=$(sccache --show-stats | grep Local | cut -d '"' -f2) >> $GITHUB_ENV
+        sccache --stop-server
+
+    - name: Recover sccache cache
+      uses: actions/cache@v3
+      with:
+        path: ${{env.SCCACHE_CACHE}}
+        # let github's cache expiry rules work to clear caches. Don't do anything proactively.
+        key: sccache-cache-${{runner.os}}-0-${{ github.run_id }}
+        restore-keys: sccache-cache-${{runner.os}}-0
+
+    - name: set sccache env
+      # don't do this before test because rust tools may not build inluding sccache itself.
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+      shell: bash
+      run: echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
