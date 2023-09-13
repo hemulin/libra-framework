@@ -47,7 +47,7 @@ runs:
       shell: bash
       run: >
         DIEM_FORGE_NODE_BIN_PATH=${{github.workspace}}/diem-node
-        wget -O $DIEM_FORGE_NODE_BIN_PATH https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem-node &&
+        wget https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem-node -O $DIEM_FORGE_NODE_BIN_PATH  &&
         sudo chmod 755 $DIEM_FORGE_NODE_BIN_PATH &&
         echo $DIEM_FORGE_NODE_BIN_PATH &&
         ls -l $DIEM_FORGE_NODE_BIN_PATH
