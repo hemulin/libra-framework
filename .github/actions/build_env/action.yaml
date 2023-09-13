@@ -40,6 +40,8 @@ runs:
 
     - name: also rust cache
       uses: Swatinem/rust-cache@v2.7.0
+      with:
+        shared-key: "libra"
 
     - name: install diem-node (for smoke tests)
       shell: bash
