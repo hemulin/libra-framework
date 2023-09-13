@@ -43,10 +43,13 @@ runs:
       with:
         shared-key: "libra"
 
+    - name: export diem-node DIEM_FORGE_NODE_BIN_PATH
+      shell: bash
+      run: echo "DIEM_FORGE_NODE_BIN_PATH=${{github.workspace}}/diem-node" >> $GITHUB_ENV
+
     - name: install diem-node (for smoke tests)
       shell: bash
       run: >
-        DIEM_FORGE_NODE_BIN_PATH=${{github.workspace}}/diem-node
         wget -O $DIEM_FORGE_NODE_BIN_PATH https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem-node &&
         sudo chmod 755 $DIEM_FORGE_NODE_BIN_PATH &&
         echo $DIEM_FORGE_NODE_BIN_PATH &&
