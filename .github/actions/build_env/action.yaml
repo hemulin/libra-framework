@@ -38,6 +38,9 @@ runs:
     - name: enable sccache
       uses: 0o-de-lally/sccache-action@local
 
+    - name: also rust cache
+      uses: Swatinem/rust-cache@v2.7.0
+
     - name: install diem-node (for smoke tests)
       shell: bash
       run: >
