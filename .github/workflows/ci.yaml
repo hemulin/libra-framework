@@ -92,7 +92,7 @@ jobs:
         uses: ./.github/actions/build_env
       - name: genesis
         if: always()
-        working-directory: ./tools/txs
+        working-directory: ./tools/genesis
         run: cargo test --no-fail-fast
 
   tower:
