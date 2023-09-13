@@ -19,12 +19,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v3
-
       - name: setup env
         uses: ./.github/actions/build_env
-
-      - name: enable sccache
-        uses: 0o-de-lally/sccache-action@local
 
       - name: format
         uses: actions-rs/cargo@v1
