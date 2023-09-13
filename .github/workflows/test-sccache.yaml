@@ -1,79 +1,108 @@
-name: test sccache
+name: rust ci
 
 on:
   push:
     branches:
-      - 'debug-ci'
+      - "debug-ci"
 env:
   DIEM_FORGE_NODE_BIN_PATH: ${{github.workspace}}/diem-node
   LIBRA_CI: 1
   MODE_0L: "TESTNET"
 
 jobs:
-  # preheat-cache:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-
-  #   - name: setup env
-  #     uses: ./.github/actions/build_env
-
-  #   - name: enable sccache
-  #     uses: 0o-de-lally/sccache-action@local
-
-  #   - name: build framework
-  #     working-directory: ./framework
-  #     run: cargo check --tests
-
-  # build-framework:
-  #   runs-on: ubuntu-latest
-  #   needs: preheat-cache
-  #   steps:
-  #   - uses: actions/checkout@v3
-
-  #   - name: setup env
-  #     uses: ./.github/actions/build_env
-
-  #   - name: enable sccache
-  #     uses: 0o-de-lally/sccache-action@local
-
-  #   - name: build framework
-  #     working-directory: ./framework
-  #     run: cargo r release
-
-  rust-tests:
+  build-framework:
     runs-on: ubuntu-latest
-    # needs: build-framework
     steps:
-    # # NOTE: for debugging CI this allow shell access to github runner. Will print out tmate.io terminal url
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
-    #   with:
-    #     detached: true
-    #   timeout-minutes: 15
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
+      - name: build framework
+        working-directory: ./framework
+        run: cargo r release
 
-    - uses: actions/checkout@v3
-    - name: setup env
-      uses: ./.github/actions/build_env
+  types:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
 
-    - name: install diem-node (for smoke tests)
-      run: >
-        wget -O $DIEM_FORGE_NODE_BIN_PATH https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem-node &&
-        sudo chmod 755 $DIEM_FORGE_NODE_BIN_PATH &&
-        echo $DIEM_FORGE_NODE_BIN_PATH &&
-        ls -l $DIEM_FORGE_NODE_BIN_PATH
+      # fail fast if types doesnt compile, everything else will fail.
+      - name: types
+        working-directory: ./types
+        run: cargo test --no-fail-fast
+  wallet:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
+      - name: wallet
+        if: always()
+        working-directory: ./tools/wallet
+        run: cargo test --no-fail-fast
 
+  smoke:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
+      # Check test suite meta tests
+      - name: smoke-tests # NOTE: needs working DIEM_FORGE_NODE_BIN_PATH
+        if: always()
+        working-directory: ./smoke-tests
+        run: cargo test --no-fail-fast
 
-    - name: enable sccache
-      uses: 0o-de-lally/sccache-action@local
+  query:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
 
-    - name: build framework
-      working-directory: ./framework
-      run: cargo r release
+      # Tools tests (some use smoke-tests)
+      - name: query
+        if: always()
+        working-directory: ./tools/query
+        run: cargo test --no-fail-fast
 
-    - name: all tests
-      run: cargo test
+  genesis:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
+      - name: genesis
+        if: always()
+        working-directory: ./tools/genesis
+        run: cargo test --no-fail-fast
 
+  tower:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
+      - name: tower
+        if: always()
+        working-directory: ./tools/tower
+        run: cargo test --no-fail-fast
 
-
-
+  txs:
+    needs: [build-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup env
+        uses: ./.github/actions/build_env
+      - name: txs
+        if: always()
+        working-directory: ./tools/txs
+        run: cargo test --no-fail-fast
