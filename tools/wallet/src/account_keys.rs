@@ -67,33 +67,33 @@ pub fn legacy_keygen(danger_print: bool) -> Result<KeyChain> {
     //////////////// Info ////////////////
 
     if danger_print {
-      println!(
-          "0L Account Address:\n\
+        println!(
+            "0L Account Address:\n\
           ...........................\n\
           {}\n",
-          &account.to_string()
-      );
+            &account.to_string()
+        );
 
-      println!(
-          "Authentication Key (for key rotation):\n\
+        println!(
+            "Authentication Key (for key rotation):\n\
           ...........................\n\
           {}\n",
-          &auth_key.to_string()
-      );
+            &auth_key.to_string()
+        );
 
-      println!(
-          "0L mnemonic:\n\
+        println!(
+            "0L mnemonic:\n\
           ..........................."
-      );
+        );
 
-      //use same styles as abscissa_info
-      println!("\x1b[1;36m{}\n\x1b[0m", mnem.as_str());
+        //use same styles as abscissa_info
+        println!("\x1b[1;36m{}\n\x1b[0m", mnem.as_str());
 
-      println!(
-          "WRITE THIS DOWN NOW. This is the last time you will see \
+        println!(
+            "WRITE THIS DOWN NOW. This is the last time you will see \
                     this mnemonic. It is not saved anywhere. Nobody can help \
                     you if you lose it.\n\n"
-      );
+        );
     }
 
     KeyChain::new(&wallet)
