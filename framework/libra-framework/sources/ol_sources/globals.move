@@ -163,7 +163,7 @@ module ol_framework::globals {
           // target transaction per sec max gas: 20
           // uses "scaled representation", since there are no decimals.
           subsidy_ceiling_gas: 8640000 * get_coin_scaling_factor(), // subsidy amount assumes 24 hour epoch lengths. Also needs to be adjusted for coin_scale the onchain representation of human readable value.
-          vdf_difficulty_baseline: 100, //3000000000, // wesolowski proof, new parameters. Benchmark available in docs/delay_tower/benchmarking
+          vdf_difficulty_baseline: 3000000000, // wesolowski proof, new parameters. Benchmark available in docs/delay_tower/benchmarking
           vdf_security_baseline: 350,
           epoch_mining_thres_lower: 1, // NOTE: bootstrapping, allowance for operator error.
           epoch_mining_thres_upper: 6, // upper bound 6 * 6hrs
