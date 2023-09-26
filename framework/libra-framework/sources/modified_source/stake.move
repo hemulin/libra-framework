@@ -1367,7 +1367,7 @@ module diem_framework::stake {
     // If the cardinality of validator_set in the next epoch is less than 4,
     // if we are failing to qualify anyone. Pick top 1/2 of outgoing compliant validator set
     // by proposals. They are probably online.
-    public fun check_failover_rules(proposed: vector<address>, performant: vector<address>): vector<address> acquires ValidatorSet {
+    public fun check_failover_rules(proposed: vector<address>, performant: vector<address>): vector<address> acquires ValidatorSet, ValidatorConfig, ValidatorPerformance{
 
         let min_f = 3;
 
@@ -1383,13 +1383,6 @@ module diem_framework::stake {
         let is_performant_below_f_4 = vector::length(&performant) <= ( 2 * (min_f+1) + 1);
 
         let is_proposed_below_f_3 = vector::length(&proposed) <= ( 2 * min_f + 1);
-
-        // hail mary.
-        // there may be something wrong with performance metrics or evaluation
-        // do nothing
-        if (is_proposed_below_f_3 && is_performant_below_f_4) {
-          return current_vals
-        };
 
         // happy case, not near failure
         if (!is_proposed_below_f_3 && !is_performant_below_f_4) return proposed;
@@ -1408,6 +1401,14 @@ module diem_framework::stake {
             return performant
           };
           return proposed
+        };
+
+        // hail mary mode
+        // there may be something wrong with performance metrics or evaluation
+        // There are extreme cases, where we have needed a better failover: for example the network may be halted for a long time, only a few blocks happened during the wallclock time of an epoch.
+        if (is_proposed_below_f_3 && is_performant_below_f_4) {
+          // we assume that the validators that are online are the ones getting blocks through.
+          return get_sorted_vals_by_props(vector::length(&current_vals) / 2)
         };
 
 

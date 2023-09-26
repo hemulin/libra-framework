@@ -66,7 +66,7 @@ module ol_framework::test_stake {
     };
 
     let cfg_list = stake::check_failover_rules(new_list, vector::empty());
-    assert!(vector::length(&cfg_list) == 10, 1003);
+    assert!(vector::length(&cfg_list) == 5, 1003);
 
   }
 
