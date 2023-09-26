@@ -51,7 +51,7 @@ module ol_framework::mock {
   public fun mock_case_1(vm: &signer, addr: address){
       assert!(stake::is_valid(addr), 01);
       stake::mock_performance(vm, addr, 1, 0);
-      let (compliant, _, _, _) = grade::get_validator_grade(addr);
+      let (compliant, _, _, _) = grade::get_validator_grade(addr, 5);
       assert!(compliant, 777703);
     }
 

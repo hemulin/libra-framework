@@ -209,7 +209,9 @@ module diem_framework::epoch_boundary {
     while (i < vector::length(&vals)) {
       let addr = vector::borrow(&vals, i);
 
-      let (performed, _, _, _) = grade::get_validator_grade(*addr);
+
+      // note, this loop exists in musical_chairs as well
+      let (performed, _, _, _) = grade::get_validator_grade(*addr, epoch_round);
       // Failover. if we had too few blocks in an epoch, everyone should pass
       // except for testing
       if (!testnet::is_testnet() && (epoch_round < 1000)) performed = true;

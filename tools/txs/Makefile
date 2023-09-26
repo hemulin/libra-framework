@@ -13,6 +13,7 @@ BOB_MNEM = "ring pumpkin cake build jungle cloth bronze aerobic mechanic baby lo
 
 transfer:
 	MNEM=${ALICE_MNEM} cargo r transfer -t ${NEWB_ADDR} -a 3
+	MNEM=${BOB_MNEM} cargo r transfer -t ${NEWB_ADDR} -a 10
 
 register:
 	MNEM=${NEWB_MNEM} cargo r validator register
