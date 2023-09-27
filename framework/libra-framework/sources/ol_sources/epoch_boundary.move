@@ -153,7 +153,7 @@ module diem_framework::epoch_boundary {
         settle_accounts(root, closing_epoch, epoch_round, status);
 
         // drip coins
-        slow_wallet::on_new_epoch(root);
+        slow_wallet::on_new_epoch<GasCoin>(root);
 
         // ======= THIS IS APPROXIMATELY THE BOUNDARY =====
         process_incoming_validators(root, status);

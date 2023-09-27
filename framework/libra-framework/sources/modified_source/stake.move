@@ -558,7 +558,8 @@ module diem_framework::stake {
             validator_index: 0,
         });
 
-        slow_wallet::set_slow<GasCoin>(account);
+        let b = coin::balance<GasCoin>(signer::address_of(account));
+        slow_wallet::set_slow<GasCoin>(account, b);
     }
 
     fun initialize_owner(owner: &signer) acquires AllowedValidators {

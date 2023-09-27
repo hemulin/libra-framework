@@ -16,6 +16,7 @@ module diem_framework::coin {
     use diem_std::type_info;
     use diem_std::math64;
 
+    use ol_framework::slow_wallet;
     // use diem_framework::chain_status;
     // use diem_std::debug::print;
 
@@ -632,8 +633,33 @@ module diem_framework::coin {
         to: address,
         amount: u64,
     ) acquires CoinStore {
+        transfer_checks(from, to, amount);
         let coin = withdraw<CoinType>(from, amount);
         deposit(to, coin);
+    }
+
+    // Private, so that the checks can be made with capability
+    fun transfer_checks<T>(payer: address, recipient: address, amount: u64) {
+        let limit = slow_wallet::unlocked_amount<T>(payer);
+        assert!(amount < limit, error::invalid_state(EINSUFFICIENT_BALANCE));
+
+        if (!account::exists_at(recipient)) {
+            // creates the account address (with the same bytes as the authentication key).
+            create_impl(recipient);
+            // return
+        };
+
+
+        // TODO: Check if Resource Accounts can register here, since they
+        // may be created without any coin registration.
+        assert!(is_account_registered<GasCoin>(recipient), error::invalid_argument(EACCOUNT_NOT_REGISTERED_FOR_GAS));
+
+        // must track the slow wallet on both sides of the transfer
+        slow_wallet::maybe_track_slow_transfer<GasCoin>(payer, recipient, amount);
+
+        // maybe track cumulative deposits if this is a donor directed wallet
+        // or other wallet which tracks cumulative payments.
+        // cumulative_deposits::maybe_update_deposit(payer, recipient, amount);
     }
 
     /// Returns the `value` passed in `coin`.

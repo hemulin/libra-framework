@@ -7,16 +7,17 @@
 
 module ol_framework::slow_wallet {
   use diem_framework::system_addresses;
-  use diem_framework::coin;
+  // use diem_framework::coin;
   use std::vector;
   use std::signer;
-  use ol_framework::gas_coin::GasCoin;
+  // use ol_framework::gas_coin::T;
   use ol_framework::testnet;
   use std::error;
 
   // use diem_std::debug::print;
 
   friend ol_framework::ol_account;
+  friend diem_framework::coin;
 
   /// genesis failed to initialized the slow wallet registry
   const EGENESIS_ERROR: u64 = 1;
@@ -85,7 +86,7 @@ module ol_framework::slow_wallet {
       }
     }
 
-    public fun set_slow<T>(sig: &signer) acquires SlowWalletList {
+    public fun set_slow<T>(sig: &signer, coin_balance: u64) acquires SlowWalletList {
       assert!(exists<SlowWalletList<T>>(@ol_framework), error::invalid_argument(EGENESIS_ERROR));
 
         let addr = signer::address_of(sig);
@@ -97,7 +98,7 @@ module ol_framework::slow_wallet {
 
         if (!exists<SlowWallet<T>>(signer::address_of(sig))) {
           move_to<SlowWallet<T>>(sig, SlowWallet {
-            unlocked: coin::balance<GasCoin>(addr),
+            unlocked: coin_balance,
             transferred: 0,
           });
         }
@@ -109,10 +110,10 @@ module ol_framework::slow_wallet {
       let i = 0;
       while (i < vector::length<address>(&list)) {
         let addr = vector::borrow<address>(&list, i);
-        let total = coin::balance<GasCoin>(*addr);
+        // let total = coin::balance<T>(*addr);
         let state = borrow_global_mut<SlowWallet<T>>(*addr);
         let next_unlock = state.unlocked + amount;
-        state.unlocked = if (next_unlock > total) { total } else { next_unlock };
+        state.unlocked = next_unlock;
         i = i + 1;
       }
     }
@@ -148,9 +149,9 @@ module ol_framework::slow_wallet {
       state.unlocked = state.unlocked + amount;
     }
 
-    public fun on_new_epoch(vm: &signer) acquires SlowWallet, SlowWalletList {
+    public fun on_new_epoch<T>(vm: &signer) acquires SlowWallet, SlowWalletList {
       system_addresses::assert_ol(vm);
-      slow_wallet_epoch_drip<GasCoin>(vm, EPOCH_DRIP_CONST);
+      slow_wallet_epoch_drip<T>(vm, EPOCH_DRIP_CONST);
     }
 
     ///////// SLOW GETTERS ////////
@@ -160,32 +161,32 @@ module ol_framework::slow_wallet {
       exists<SlowWallet<T>>(addr)
     }
 
-    #[view]
-    /// helper to get the unlocked and total balance. (unlocked, total)
-    public fun balance<T>(addr: address): (u64, u64) acquires SlowWallet{
-      // this is a normal account, so return the normal balance
-      let total = coin::balance<GasCoin>(addr);
-      if (exists<SlowWallet<T>>(addr)) {
-        let s = borrow_global<SlowWallet<T>>(addr);
-        return (s.unlocked, total)
-      };
+    // #[view]
+    // /// helper to get the unlocked and total balance. (unlocked, total)
+    // public fun balance<T>(addr: address): (u64, u64) acquires SlowWallet{
+    //   // this is a normal account, so return the normal balance
+    //   let total = coin::balance<T>(addr);
+    //   if (exists<SlowWallet<T>>(addr)) {
+    //     let s = borrow_global<SlowWallet<T>>(addr);
+    //     return (s.unlocked, total)
+    //   };
 
-      // if the account has no SlowWallet tracker, then everything is unlocked.
-      (total, total)
-    }
+    //   // if the account has no SlowWallet tracker, then everything is unlocked.
+    //   (total, total)
+    // }
 
-    #[view]
-    // TODO: Deprecate this function in favor of `balance`
-    /// Returns the amount of unlocked funds for a slow wallet.
-    public fun unlocked_amount<T>(addr: address): u64 acquires SlowWallet{
-      // this is a normal account, so return the normal balance
-      if (exists<SlowWallet<T>>(addr)) {
-        let s = borrow_global<SlowWallet<T>>(addr);
-        return s.unlocked
-      };
+    // #[view]
+    // // TODO: Deprecate this function in favor of `balance`
+    // /// Returns the amount of unlocked funds for a slow wallet.
+    // public fun unlocked_amount<T>(addr: address): u64 acquires SlowWallet{
+    //   // this is a normal account, so return the normal balance
+    //   if (exists<SlowWallet<T>>(addr)) {
+    //     let s = borrow_global<SlowWallet<T>>(addr);
+    //     return s.unlocked
+    //   };
 
-      coin::balance<GasCoin>(addr)
-    }
+    //   coin::balance<T>(addr)
+    // }
 
     #[view]
     // Getter for retrieving the list of slow wallets.
