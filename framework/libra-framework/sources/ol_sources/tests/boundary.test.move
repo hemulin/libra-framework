@@ -4,6 +4,7 @@ module ol_framework::test_boundary {
   use std::vector;
   use diem_std::bls12381;
   use ol_framework::mock;
+  use ol_framework::gas_coin::GasCoin;
 
   // use ol_framework::account;
   use ol_framework::proof_of_fee;
@@ -32,7 +33,7 @@ module ol_framework::test_boundary {
     mock::ol_initialize_coin_and_fund_vals(root, 500000, true);
     mock::mock_all_vals_good_performance(root);
     mock::pof_default();
-    slow_wallet::slow_wallet_epoch_drip(root, 500000);
+    slow_wallet::slow_wallet_epoch_drip<GasCoin>(root, 500000);
 
     set
   }

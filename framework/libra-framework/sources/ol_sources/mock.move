@@ -185,7 +185,7 @@ module ol_framework::mock {
         i = i + 1;
       };
 
-      if (drip) slow_wallet::slow_wallet_epoch_drip(root, amount);
+      if (drip) slow_wallet::slow_wallet_epoch_drip<GasCoin>(root, amount);
       gas_coin::restore_mint_cap(root, mint_cap);
     }
 

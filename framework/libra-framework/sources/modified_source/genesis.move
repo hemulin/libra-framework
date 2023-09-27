@@ -154,7 +154,7 @@ module diem_framework::genesis {
         //TODO!: genesis seats
 
         proof_of_fee::init_genesis_baseline_reward(&diem_framework_account);
-        slow_wallet::initialize(&diem_framework_account);
+        slow_wallet::initialize<GasCoin>(&diem_framework_account);
         tower_state::initialize(&diem_framework_account);
         safe::initialize(&diem_framework_account);
         donor_directed::initialize(&diem_framework_account);
@@ -306,7 +306,7 @@ module diem_framework::genesis {
             if (testnet::is_not_mainnet()) {
               let sig = create_signer(validator.validator_config.owner_address);
               proof_of_fee::set_bid(&sig, 05, 1000);
-              slow_wallet::slow_wallet_epoch_drip(diem_framework, 100000000);
+              slow_wallet::slow_wallet_epoch_drip<GasCoin>(diem_framework, 100000000);
             };
 
             i = i + 1;

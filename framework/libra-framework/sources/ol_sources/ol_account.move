@@ -67,7 +67,7 @@ module ol_framework::ol_account {
     // /// Creates an account by sending an initial amount of GAS to it.
     // public entry fun create_user_account_by_coin(sender: &signer, auth_key: address, amount: u64) {
     //     // warn early before attempting to creat the account.
-    //     let limit = slow_wallet::unlocked_amount(signer::address_of(sender));
+    //     let limit = slow_wallet::unlocked_amount<GasCoin>(signer::address_of(sender));
     //     assert!(amount < limit, error::invalid_state(EINSUFFICIENT_BALANCE));
 
     //     create_impl(auth_key);
@@ -150,22 +150,22 @@ module ol_framework::ol_account {
       transfer_checks(payer, recipient, amount);
       let c = coin::withdraw_with_capability<GasCoin>(cap, amount);
       coin::deposit<GasCoin>(recipient, c);
-      slow_wallet::maybe_track_slow_transfer(payer, recipient, amount);
+      slow_wallet::maybe_track_slow_transfer<GasCoin>(payer, recipient, amount);
     }
 
     /// Withdraw a coin while tracking the unlocked withdraw
     public fun withdraw_with_capability(cap: &WithdrawCapability, amount: u64): Coin<GasCoin> {
       let payer = account::get_withdraw_cap_address(cap);
-      let limit = slow_wallet::unlocked_amount(payer);
+      let limit = slow_wallet::unlocked_amount<GasCoin>(payer);
       assert!(amount < limit, error::invalid_state(EINSUFFICIENT_BALANCE));
 
-      slow_wallet::maybe_track_unlocked_withdraw(payer, amount);
+      slow_wallet::maybe_track_unlocked_withdraw<GasCoin>(payer, amount);
       coin::withdraw_with_capability(cap, amount)
     }
 
     // actual implementation to allow for capability
     fun transfer_checks(payer: address, recipient: address, amount: u64) {
-        let limit = slow_wallet::unlocked_amount(payer);
+        let limit = slow_wallet::unlocked_amount<GasCoin>(payer);
         assert!(amount < limit, error::invalid_state(EINSUFFICIENT_BALANCE));
 
         if (!account::exists_at(recipient)) {
@@ -180,7 +180,7 @@ module ol_framework::ol_account {
         assert!(coin::is_account_registered<GasCoin>(recipient), error::invalid_argument(EACCOUNT_NOT_REGISTERED_FOR_GAS));
 
         // must track the slow wallet on both sides of the transfer
-        slow_wallet::maybe_track_slow_transfer(payer, recipient, amount);
+        slow_wallet::maybe_track_slow_transfer<GasCoin>(payer, recipient, amount);
 
         // maybe track cumulative deposits if this is a donor directed wallet
         // or other wallet which tracks cumulative payments.
@@ -189,9 +189,9 @@ module ol_framework::ol_account {
 
     /// Withdraw funds while respecting the transfer limits
     public fun withdraw(sender: &signer, amount: u64): Coin<GasCoin> {
-        let limit = slow_wallet::unlocked_amount(signer::address_of(sender));
+        let limit = slow_wallet::unlocked_amount<GasCoin>(signer::address_of(sender));
         assert!(amount < limit, error::invalid_state(EINSUFFICIENT_BALANCE));
-        slow_wallet::maybe_track_unlocked_withdraw(signer::address_of(sender), amount);
+        slow_wallet::maybe_track_unlocked_withdraw<GasCoin>(signer::address_of(sender), amount);
         coin::withdraw<GasCoin>(sender, amount)
     }
 
@@ -218,7 +218,7 @@ module ol_framework::ol_account {
 
       // transfers which use VM authority (e.g. donor directed accounts)
       // should also track the recipient's slow wallet unlock counter.
-      slow_wallet::maybe_track_slow_transfer(from, to, amount_transferred);
+      slow_wallet::maybe_track_slow_transfer<GasCoin>(from, to, amount_transferred);
 
       // how much was actually extracted, and was that equal to the amount expected
       (amount_transferred, amount_transferred == amount)
@@ -234,7 +234,7 @@ module ol_framework::ol_account {
     /// return the GasCoin balance as tuple (unlocked, total)
     // TODO v7: consolidate balance checks here, not in account, slow_wallet, or coin
     public fun balance(addr: address): (u64, u64) {
-      slow_wallet::balance(addr)
+      slow_wallet::balance<GasCoin>(addr)
     }
 
     // #[test_only]
@@ -267,7 +267,7 @@ module ol_framework::ol_account {
     /// TODO: cumulative tracker will not work here.
     public fun deposit_coins(to: address, coins: Coin<GasCoin>) {
         assert!(coin::is_account_registered<GasCoin>(to), error::invalid_state(EACCOUNT_NOT_REGISTERED_FOR_GAS));
-        slow_wallet::maybe_track_unlocked_deposit(to, coin::value(&coins));
+        slow_wallet::maybe_track_unlocked_deposit<GasCoin>(to, coin::value(&coins));
         coin::deposit<GasCoin>(to, coins);
     }
 

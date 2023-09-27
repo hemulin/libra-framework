@@ -9,6 +9,7 @@ module ol_framework::test_pof {
   use ol_framework::vouch;
   use ol_framework::testnet;
   use ol_framework::globals;
+  use ol_framework::gas_coin::GasCoin;
   use diem_framework::stake;
   use std::vector;
 
@@ -33,7 +34,7 @@ module ol_framework::test_pof {
     assert!(bid == 1, 1001);
     assert!(expires == 10000, 1002);
 
-    let coin = slow_wallet::unlocked_amount(*alice);
+    let coin = slow_wallet::unlocked_amount<GasCoin>(*alice);
     let (r, _, _) = proof_of_fee::get_consensus_reward();
     let bid_cost = (bid * r) / 1000;
     assert!(coin > bid_cost, 1005);
@@ -141,8 +142,8 @@ module ol_framework::test_pof {
     assert!(expires == 10000, 1002);
 
     // NOT ENOUGH FUNDS WERE UNLOCKED
-    slow_wallet::slow_wallet_epoch_drip(&root, 500);
-    let coin = slow_wallet::unlocked_amount(alice);
+    slow_wallet::slow_wallet_epoch_drip<GasCoin>(&root, 500);
+    let coin = slow_wallet::unlocked_amount<GasCoin>(alice);
     let (r, _, _) = proof_of_fee::get_consensus_reward();
     let bid_cost = (bid * r) / 1000;
     assert!(coin < bid_cost, 1005);
@@ -341,7 +342,7 @@ module ol_framework::test_pof {
 
     mock::pof_default();
 
-    slow_wallet::slow_wallet_epoch_drip(&root, 500000);
+    slow_wallet::slow_wallet_epoch_drip<GasCoin>(&root, 500000);
 
     let sorted = proof_of_fee::get_bidders(true);
     assert!(vector::length(&sorted) == vector::length(&set), 1003);
@@ -366,7 +367,7 @@ module ol_framework::test_pof {
     mock::ol_initialize_coin_and_fund_vals(&root, 500000, true);
     mock::pof_default();
 
-    slow_wallet::slow_wallet_epoch_drip(&root, 500000);
+    slow_wallet::slow_wallet_epoch_drip<GasCoin>(&root, 500000);
 
     let sorted = proof_of_fee::get_bidders(true);
     assert!(vector::length(&sorted) == vector::length(&set), 1003);
@@ -411,7 +412,7 @@ module ol_framework::test_pof {
     let a_sig = account::create_signer_for_test(*vector::borrow(&set, 4));
     proof_of_fee::set_bid(&a_sig, 0, 0);
 
-    slow_wallet::slow_wallet_epoch_drip(&root, 500000);
+    slow_wallet::slow_wallet_epoch_drip<GasCoin>(&root, 500000);
 
     let sorted = proof_of_fee::get_bidders(true);
     assert!(vector::length(&sorted) != vector::length(&set), 1003);

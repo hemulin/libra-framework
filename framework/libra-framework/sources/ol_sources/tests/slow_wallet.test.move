@@ -15,6 +15,8 @@ module ol_framework::test_slow_wallet {
   use ol_framework::transaction_fee;
   use ol_framework::rewards;
   use std::vector;
+  use ol_framework::gas_coin::GasCoin;
+
 
   // use diem_std::debug::print;
 
@@ -23,7 +25,7 @@ module ol_framework::test_slow_wallet {
   // and a validator creation sets the users account to slow.
   fun slow_wallet_init (root: signer) {
       let _set = mock::genesis_n_vals(&root, 4);
-      let list = slow_wallet::get_slow_list();
+      let list = slow_wallet::get_slow_list<GasCoin>();
 
       // alice, the validator, is already a slow wallet.
       assert!(vector::length<address>(&list) == 4, 735701);
@@ -33,7 +35,7 @@ module ol_framework::test_slow_wallet {
       let (_sk, pk, pop) = stake::generate_identity();
       stake::initialize_test_validator(&root, &pk, &pop, &sig, 100, true, true);
 
-      let list = slow_wallet::get_slow_list();
+      let list = slow_wallet::get_slow_list<GasCoin>();
       assert!(vector::length<address>(&list) == 5, 735701);
   }
 
@@ -43,34 +45,34 @@ module ol_framework::test_slow_wallet {
     mock::ol_initialize_coin_and_fund_vals(&root, 100, false);
     let a = vector::borrow(&set, 0);
 
-    assert!(slow_wallet::is_slow(*a), 7357000);
-    assert!(slow_wallet::unlocked_amount(*a) == 100, 735701);
+    assert!(slow_wallet::is_slow<GasCoin>(*a), 7357000);
+    assert!(slow_wallet::unlocked_amount<GasCoin>(*a) == 100, 735701);
 
     let coin = transaction_fee::test_root_withdraw_all(&root);
     rewards::test_helper_pay_reward(&root, *a, coin, 0);
 
-    let (u, b) = slow_wallet::balance(*a);
+    let (u, b) = slow_wallet::balance<GasCoin>(*a);
     assert!(b==100000100, 735702);
     assert!(u==100, 735703);
 
-    slow_wallet::slow_wallet_epoch_drip(&root, 233);
-    let (u, b) = slow_wallet::balance(*a);
+    slow_wallet::slow_wallet_epoch_drip<GasCoin>(&root, 233);
+    let (u, b) = slow_wallet::balance<GasCoin>(*a);
     assert!(b==100000100, 735704);
     assert!(u==333, 735705);
   }
 
   #[test(root = @ol_framework, alice = @0x123, bob = @0x456)]
   fun test_transfer_unlocked_happy(root: signer, alice: signer) {
-    slow_wallet::initialize(&root);
+    slow_wallet::initialize<GasCoin>(&root);
 
 
     // create alice account
     ol_account::create_account(&root, @0x123);
 
-    slow_wallet::set_slow(&alice);
+    slow_wallet::set_slow<GasCoin>(&alice);
 
-    assert!(slow_wallet::is_slow(@0x123), 7357000);
-    assert!(slow_wallet::unlocked_amount(@0x123) == 0, 735701);
+    assert!(slow_wallet::is_slow<GasCoin>(@0x123), 7357000);
+    assert!(slow_wallet::unlocked_amount<GasCoin>(@0x123) == 0, 735701);
 
     // add some coins to alice
     let (burn_cap, mint_cap) = gas_coin::initialize_for_test(&root);
@@ -78,25 +80,25 @@ module ol_framework::test_slow_wallet {
     coin::destroy_burn_cap(burn_cap);
     coin::destroy_mint_cap(mint_cap);
     // the transfer was of already unlocked coins, so they will post as unlocked on alice
-    assert!(slow_wallet::unlocked_amount(@0x123) == 10000, 735703);
+    assert!(slow_wallet::unlocked_amount<GasCoin>(@0x123) == 10000, 735703);
 
     // transferring funds will create Bob's account
     // the coins are also unlocked
     ol_account::transfer(&alice, @0x456, 10);
     let b_balance = coin::balance<gas_coin::GasCoin>(@0x456);
     assert!(b_balance == 10, 735704);
-    assert!(slow_wallet::unlocked_amount(@0x456) == 10, 735705);
+    assert!(slow_wallet::unlocked_amount<GasCoin>(@0x456) == 10, 735705);
   }
 
   // scenario: testing trying send more funds than are unlocked
   #[test(root = @ol_framework, alice = @0x123, bob = @0x456)]
   #[expected_failure(abort_code = 196614, location = 0x1::ol_account)]
   fun test_transfer_sad(root: signer, alice: signer) {
-    slow_wallet::initialize(&root);
+    slow_wallet::initialize<GasCoin>(&root);
     ol_account::create_account(&root, @0x123);
-    slow_wallet::set_slow(&alice);
-    assert!(slow_wallet::is_slow(@0x123), 7357000);
-    assert!(slow_wallet::unlocked_amount(@0x123) == 0, 735701);
+    slow_wallet::set_slow<GasCoin>(&alice);
+    assert!(slow_wallet::is_slow<GasCoin>(@0x123), 7357000);
+    assert!(slow_wallet::unlocked_amount<GasCoin>(@0x123) == 0, 735701);
 
     // fund alice
     let (burn_cap, mint_cap) = gas_coin::initialize_for_test(&root);
@@ -109,7 +111,7 @@ module ol_framework::test_slow_wallet {
 
     let b_balance = coin::balance<gas_coin::GasCoin>(@0x456);
     assert!(b_balance == 99, 735702);
-    assert!(slow_wallet::unlocked_amount(@0x123) == 01, 735703);
+    assert!(slow_wallet::unlocked_amount<GasCoin>(@0x123) == 01, 735703);
 
     ol_account::transfer(&alice, @0x456, 200); // TOO MUCH, should fail
   }
@@ -122,7 +124,7 @@ module ol_framework::test_slow_wallet {
     let set = mock::genesis_n_vals(&root, 4);
     mock::ol_initialize_coin(&root);
     let a = vector::borrow(&set, 0);
-    assert!(slow_wallet::unlocked_amount(*a) == 0, 735701);
+    assert!(slow_wallet::unlocked_amount<GasCoin>(*a) == 0, 735701);
     epoch_boundary::ol_reconfigure_for_test(&root, reconfiguration::get_current_epoch(), block::get_current_block_height())
 
   }

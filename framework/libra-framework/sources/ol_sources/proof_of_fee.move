@@ -22,6 +22,7 @@ module ol_framework::proof_of_fee {
   use diem_framework::stake;
   use diem_framework::system_addresses;
   use ol_framework::globals;
+  use ol_framework::gas_coin::GasCoin;
   // use diem_std::debug::print;
 
   friend ol_framework::epoch_boundary;
@@ -348,7 +349,7 @@ module ol_framework::proof_of_fee {
       // Safety check: node has valid configs
       if (!stake::stake_pool_exists(val)) vector::push_back(&mut errors, EVALIDATOR_NOT_CONFIGURED); // 11
       // is a slow wallet
-      if (!slow_wallet::is_slow(val)) vector::push_back(&mut errors, EWALLET_NOT_SLOW); // 12
+      if (!slow_wallet::is_slow<GasCoin>(val)) vector::push_back(&mut errors, EWALLET_NOT_SLOW); // 12
       // we can't seat validators that were just jailed
       // NOTE: epoch reconfigure needs to reset the jail
       // before calling the proof of fee.
@@ -368,7 +369,7 @@ module ol_framework::proof_of_fee {
       if (epoch_helper::get_current_epoch() > expire) vector::push_back(&mut errors, EBID_EXPIRED); // 16
       // skip the user if they don't have sufficient UNLOCKED funds
       // or if the bid expired.
-      let unlocked_coins = slow_wallet::unlocked_amount(val);
+      let unlocked_coins = slow_wallet::unlocked_amount<GasCoin>(val);
       let (baseline_reward, _, _) = get_consensus_reward();
       let coin_required = fixed_point32::multiply_u64(baseline_reward, fixed_point32::create_from_rational(bid_pct, 1000));
 

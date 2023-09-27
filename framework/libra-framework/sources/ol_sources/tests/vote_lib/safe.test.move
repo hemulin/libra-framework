@@ -7,7 +7,7 @@ module ol_framework::test_safe {
   use std::option;
   use ol_framework::ol_account;
   use diem_framework::resource_account;
-  use ol_framework::gas_coin;
+  use ol_framework::gas_coin::{Self, GasCoin};
 
   // NOTE: Most of the save.move features are tested in multi_action (e.g. governance). Here we are testing for specific APIs.
 
@@ -36,7 +36,7 @@ module ol_framework::test_safe {
     // vote should pass after bob also votes
     let passed = safe::vote_payment(bob, new_resource_address, &prop_id);
     assert!(passed, 1);
-    let (_, total_dave) = slow_wallet::balance(@0x1000d);
+    let (_, total_dave) = slow_wallet::balance<GasCoin>(@0x1000d);
     assert!(total_dave == 42, 2);
   }
 
@@ -66,7 +66,7 @@ module ol_framework::test_safe {
     // vote should pass after bob also votes
     let passed = safe::vote_payment(bob, new_resource_address, &prop_id);
     assert!(!passed, 1);
-    let (_, total_dave) = slow_wallet::balance(@0x1000e);
+    let (_, total_dave) = slow_wallet::balance<GasCoin>(@0x1000e);
     assert!(total_dave == 0, 2);
   }
 

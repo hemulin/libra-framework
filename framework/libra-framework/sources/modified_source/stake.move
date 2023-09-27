@@ -37,6 +37,7 @@ module diem_framework::stake {
 
     use ol_framework::slow_wallet;
     use ol_framework::testnet;
+    use ol_framework::gas_coin::GasCoin;
 
     // use diem_std::debug::print;
 
@@ -557,7 +558,7 @@ module diem_framework::stake {
             validator_index: 0,
         });
 
-        slow_wallet::set_slow(account);
+        slow_wallet::set_slow<GasCoin>(account);
     }
 
     fun initialize_owner(owner: &signer) acquires AllowedValidators {

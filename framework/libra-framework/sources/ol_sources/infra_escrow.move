@@ -71,7 +71,7 @@ module ol_framework::infra_escrow{
 
       let escrow_pct = fixed_point32::create_from_rational(escrow_pct, 1000000);
 
-      let (unlocked, total) = slow_wallet::balance(user_addr);
+      let (unlocked, total) = slow_wallet::balance<GasCoin>(user_addr);
 
       let locked = 0;
       if ((total > unlocked) && (total > 0)) {
