@@ -10,7 +10,7 @@ on:
       - opened
       - synchronize
     branches:
-      - 'patch-formal'
+      - 'patch-formal*'
       # - 'release**'
       # - 'main'
 
