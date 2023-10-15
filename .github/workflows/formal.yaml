@@ -2,16 +2,17 @@ name: formal verification
 on:
   push:
     branches: ["ci*"]
-  #   tags:
-  #   - '[0-9]+.[0-9]+.[0-9]+'
-  #   - '[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
-  # pull_request:
-  #   types:
-  #     - opened
-  #     - synchronize
-  #   branches:
-  #     - 'release**'
-  #     - 'main'
+    tags:
+    - '[0-9]+.[0-9]+.[0-9]+'
+    - '[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - 'patch-formal'
+      # - 'release**'
+      # - 'main'
 
 env:
 
@@ -32,17 +33,16 @@ jobs:
       #   uses: ./.github/actions/build_env
 
       - name: install prover dependencies
-        run: >
-            cd .. &&
-            git clone https://github.com/0LNetworkCommunity/diem.git &&
-            cd diem &&
-            ./scripts/dev_setup.sh -ypb
+        run: |
+          git clone https://github.com/0LNetworkCommunity/diem.git diem-repo
+          cd diem-repo
+          ./scripts/dev_setup.sh -ypb
 
       - name: install diem (for move tests)
-        run: >
-          wget -O ${{github.workspace}}/diem https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem &&
-          sudo chmod 755 ${{github.workspace}}/diem
+        run: |
+          wget -O ${{github.workspace}}/diem-binary https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem
+          sudo chmod 755 ${{github.workspace}}/diem-binary
 
       - name: prove
-        run: diem move prove -f version
+        run: ${{github.workspace}}/diem-binary move prove -f version
         working-directory: ./framework/libra-framework
