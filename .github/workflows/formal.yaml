@@ -10,9 +10,9 @@ on:
       - opened
       - synchronize
     branches:
-      - 'patch-formal'
-      # - 'release**'
-      # - 'main'
+      - 'patch-formal*'
+      - 'release**'
+      - 'main'
 
 env:
 
