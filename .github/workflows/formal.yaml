@@ -42,6 +42,11 @@ jobs:
           wget -O ${{github.workspace}}/diem-binary https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem
           sudo chmod 755 ${{github.workspace}}/diem-binary
 
+      - name: Set up environment variables for Boogie and dotnet
+        run: |
+          echo "BOOGIE_EXE=/root/.dotnet/tools/boogie" >> $GITHUB_ENV
+          echo "/root/.dotnet" >> $GITHUB_PATH
+
       - name: prove
         run: ${{github.workspace}}/diem-binary move prove -f version
         working-directory: ./framework/libra-framework
