@@ -32,6 +32,7 @@ jobs:
       # - name: setup env
       #   uses: ./.github/actions/build_env
 
+        # Note: the diem-repo and the diem-binary are directed into different folders
       - name: install prover dependencies
         run: |
           git clone https://github.com/0LNetworkCommunity/diem.git diem-repo
