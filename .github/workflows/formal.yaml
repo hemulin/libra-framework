@@ -11,8 +11,8 @@ on:
       - synchronize
     branches:
       - 'patch-formal*'
-      # - 'release**'
-      # - 'main'
+      - 'release**'
+      - 'main'
 
 env:
 
