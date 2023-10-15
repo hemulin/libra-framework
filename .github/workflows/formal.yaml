@@ -47,6 +47,9 @@ jobs:
           echo "BOOGIE_EXE=/root/.dotnet/tools/boogie" >> $GITHUB_ENV
           echo "/root/.dotnet" >> $GITHUB_PATH
 
+      - name: Set execute permissions for Boogie
+        run: sudo chmod +x /root/.dotnet/tools/boogie
+
       - name: prove
         run: ${{github.workspace}}/diem-binary move prove -f version
         working-directory: ./framework/libra-framework
