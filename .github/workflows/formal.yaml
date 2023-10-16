@@ -44,11 +44,11 @@ jobs:
 
       - name: Set up environment variables for Boogie and dotnet
         run: |
-          echo "BOOGIE_EXE=/root/.dotnet/tools/boogie" >> $GITHUB_ENV
-          echo "/root/.dotnet" >> $GITHUB_PATH
+          echo "BOOGIE_EXE=/home/runner/.dotnet/tools/boogie" >> $GITHUB_ENV
+          echo "/home/runner/.dotnet" >> $GITHUB_PATH
 
       - name: Set execute permissions for Boogie
-        run: sudo chmod +x /root/.dotnet/tools/boogie
+        run: sudo chmod +x /home/runner/.dotnet/tools/boogie
 
       - name: prove
         run: ${{github.workspace}}/diem-binary move prove -f version
