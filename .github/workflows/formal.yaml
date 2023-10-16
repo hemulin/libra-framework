@@ -14,8 +14,6 @@ on:
       - 'release**'
       - 'main'
 
-env:
-
 jobs:
   formal:
     runs-on: ubuntu-latest
@@ -25,13 +23,14 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         with:
           detached: true
-        timeout-minutes: 15
+        timeout-minutes: 60
 
       - uses: actions/checkout@v3
 
       # - name: setup env
       #   uses: ./.github/actions/build_env
 
+        # Note: the diem-repo and the diem-binary are directed into different folders
       - name: install prover dependencies
         run: |
           git clone https://github.com/0LNetworkCommunity/diem.git diem-repo
@@ -42,6 +41,14 @@ jobs:
         run: |
           wget -O ${{github.workspace}}/diem-binary https://github.com/0LNetworkCommunity/diem/releases/latest/download/diem
           sudo chmod 755 ${{github.workspace}}/diem-binary
+
+      - name: Set up environment variables for Boogie and dotnet
+        run: |
+          echo "BOOGIE_EXE=/home/runner/.dotnet/tools/boogie" >> $GITHUB_ENV
+          echo "/home/runner/.dotnet" >> $GITHUB_PATH
+
+      - name: Set execute permissions for Boogie
+        run: sudo chmod +x /home/runner/.dotnet/tools/boogie
 
       - name: prove
         run: ${{github.workspace}}/diem-binary move prove -f version
